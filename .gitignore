@@ -2,4 +2,7 @@ node_modules/
 .env
 .env.local
 dist/
+<<<<<<< HEAD
 .next/
+=======
+>>>>>>> b1da2373dd29605d7fff4a057f0562567da6b078
