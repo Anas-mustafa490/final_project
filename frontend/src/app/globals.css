@@ -1,0 +1,276 @@
+@import "tailwindcss";
+
+@theme {
+  /* Deep night-sky black, like the gaps between skyscrapers */
+  --color-bg: #060608;
+  --color-bg-soft: #0B0D14;
+  --color-surface: #11141D;
+  --color-surface-hover: #181C29;
+  --color-border: #262B3D;
+
+  /* Spider-Man trio: web-blue, hero-red, and a hot alert-red for pop */
+  --color-indigo: #1857C4;   /* Spidey blue   */
+  --color-purple: #E0141E;  /* Spidey red    */
+  --color-pink: #FF3B30;    /* Hot red pop   */
+
+  --color-text: #F4F5F8;
+  --color-text-muted: #A6ACC2;
+  --color-text-faint: #666C85;
+
+  --color-success: #34D399;
+  --color-danger: #FF5A4E;
+
+  --font-serif: "Bangers", "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  background-color: var(--color-bg);
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  background-image:
+    radial-gradient(circle at 12% 0%, rgba(24, 87, 196, 0.28), transparent 42%),
+    radial-gradient(circle at 88% 12%, rgba(224, 20, 30, 0.22), transparent 46%),
+    radial-gradient(circle at 50% 100%, rgba(24, 87, 196, 0.16), transparent 50%),
+    /* faint spider-web line grid across the whole page */
+    repeating-linear-gradient(45deg, rgba(166, 172, 194, 0.045) 0 1px, transparent 1px 68px),
+    repeating-linear-gradient(-45deg, rgba(166, 172, 194, 0.045) 0 1px, transparent 1px 68px);
+  background-attachment: fixed;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-serif);
+  color: var(--color-text);
+  letter-spacing: 0.02em;
+}
+
+/* Gradient text for hero headings / accents - blue to red, the classic suit split */
+.gradient-text {
+  background-image: linear-gradient(90deg, #3E7BFA 0%, #7A5FE0 45%, #FF3B30 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* Comic-style outlined heading accent - use sparingly on hero/brand text */
+.comic-outline {
+  -webkit-text-stroke: 1.5px #060608;
+  paint-order: stroke fill;
+}
+
+/* Primary CTA - red-to-blue gradient with a hero-glow on hover, thin dark outline like an inked comic panel */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  background-image: linear-gradient(135deg, #FF3B30, #E0141E 45%, #1857C4);
+  color: #ffffff;
+  padding: 0.65rem 1.4rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  border: 1px solid rgba(6, 6, 8, 0.35);
+  box-shadow: 0 4px 20px rgba(224, 20, 30, 0.35);
+  transition: box-shadow 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+}
+.btn-primary:hover {
+  box-shadow: 0 6px 28px rgba(24, 87, 196, 0.5), 0 0 0 3px rgba(255, 59, 48, 0.15);
+  transform: translateY(-1px);
+}
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* Accent - solid Spidey blue, white text */
+.btn-accent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  background-color: var(--color-indigo);
+  color: #ffffff;
+  padding: 0.65rem 1.4rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  transition: filter 0.2s ease;
+}
+.btn-accent:hover { filter: brightness(1.15); }
+.btn-accent:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Outline - subtle border, fills red on hover like a web-shooter charging up */
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  background-color: transparent;
+  padding: 0.55rem 1.2rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+.btn-outline:hover {
+  border-color: var(--color-purple);
+  background-color: rgba(224, 20, 30, 0.1);
+}
+
+.input-field {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  padding: 0.65rem 0.9rem;
+  font-size: 0.875rem;
+  color: var(--color-text);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.input-field::placeholder { color: var(--color-text-faint); }
+.input-field:focus {
+  border-color: var(--color-indigo);
+  box-shadow: 0 0 0 3px rgba(24, 87, 196, 0.22);
+}
+
+/* Browsers force a white/yellow background on autofilled inputs by
+   default (email/password managers). This trick uses a giant inset
+   box-shadow to paint over it with our dark surface color instead,
+   and forces the text color so it stays readable. Covers Chrome,
+   Edge, Safari, Brave (all Chromium/WebKit based). */
+.input-field:-webkit-autofill,
+.input-field:-webkit-autofill:hover,
+.input-field:-webkit-autofill:focus,
+.input-field:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px var(--color-surface) inset !important;
+  box-shadow: 0 0 0 1000px var(--color-surface) inset !important;
+  -webkit-text-fill-color: var(--color-text) !important;
+  caret-color: var(--color-text);
+  /* delays the browser's own transition so it never flashes white first */
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+.card {
+  border-radius: 0.9rem;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+}
+
+.card-hover {
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  border-color: rgba(224, 20, 30, 0.55);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(24, 87, 196, 0.22);
+}
+
+/* Thin gradient border wrapper, e.g. for featured cards - red/blue web-shooter trim */
+.gradient-border {
+  position: relative;
+  border-radius: 0.9rem;
+  padding: 1px;
+  background-image: linear-gradient(135deg, #FF3B30, #E0141E, #1857C4);
+}
+.gradient-border > * {
+  border-radius: calc(0.9rem - 1px);
+  background-color: var(--color-surface);
+}
+
+/* Subtle web-line texture for surfaces that want extra flavor (opt-in) */
+.web-bg {
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(166, 172, 194, 0.08), transparent 55%),
+    repeating-linear-gradient(60deg, rgba(166, 172, 194, 0.05) 0 1px, transparent 1px 46px),
+    repeating-linear-gradient(-60deg, rgba(166, 172, 194, 0.05) 0 1px, transparent 1px 46px);
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up { animation: fadeInUp 0.5s ease both; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.animate-spin-slow { animation: spin 0.8s linear infinite; }
+
+/* "Spidey-sense" pulse - red glow instead of the old purple glow */
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+.animate-glow { animation: glowPulse 3s ease-in-out infinite; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50% { transform: translateY(-16px) rotate(4deg); }
+}
+.animate-float { animation: float 3s ease-in-out infinite; }
+
+@keyframes bounceDot {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  40% { transform: translateY(-5px); opacity: 1; }
+}
+.animate-bounce-dot { display: inline-block; animation: bounceDot 1.2s infinite; }
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background-image: linear-gradient(90deg, var(--color-surface) 25%, var(--color-surface-hover) 50%, var(--color-surface) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 32s linear infinite;
+}
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+@keyframes marqueeVertical {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+.animate-marquee-vertical {
+  animation: marqueeVertical 10s linear infinite;
+}
+.animate-marquee-vertical-reverse {
+  animation: marqueeVertical 10s linear infinite reverse;
+}
+.animate-marquee-vertical:hover,
+.animate-marquee-vertical-reverse:hover {
+  animation-play-state: paused;
+}
+.marquee-fade-mask {
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+}
+
+/* Thin red/blue accent line under the navbar and above the footer - like a
+   web strand strung between two rooftops */
+.web-strand {
+  height: 2px;
+  background-image: linear-gradient(90deg, transparent, #FF3B30 20%, #1857C4 50%, #FF3B30 80%, transparent);
+  opacity: 0.7;
+}
+
+/* Custom scrollbar in Spidey colors */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--color-bg-soft); }
+::-webkit-scrollbar-thumb {
+  background-image: linear-gradient(180deg, #E0141E, #1857C4);
+  border-radius: 999px;
+  border: 2px solid var(--color-bg-soft);
+}

@@ -1,0 +1,74 @@
+const mongoose = require("mongoose");
+
+const courseSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: [true, "Course title is required"],
+      trim: true,
+    },
+
+    description: {
+      type: String,
+      required: [true, "Course description is required"],
+    },
+
+    category: {
+      type: String,
+      required: [true, "Course category is required"],
+      trim: true,
+    },
+
+    level: {
+      type: String,
+      enum: ["beginner", "intermediate", "advanced"],
+      default: "beginner",
+    },
+
+    thumbnail: {
+      type: String,
+      default: "",
+    },
+
+    // Controls whether this course shows in the homepage "Popular
+    // courses" carousel. Instructor/admin toggles this explicitly - NOT
+    // every published course should show up there.
+    isFeatured: {
+      type: Boolean,
+      default: false,
+    },
+
+    instructor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
+    isPublished: {
+      type: Boolean,
+      default: false,
+    },
+
+    enrollmentCount: {
+      type: Number,
+      default: 0,
+    },
+
+    // Bidirectional link: Lesson stores `course` (for ownership/gating checks),
+    // and Course stores this `lessons` array (for ordering + quick lesson count).
+    // Kept in sync from lessonController: pushed on create, pulled on delete.
+    lessons: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Lesson",
+      },
+    ],
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const Course = mongoose.model("Course", courseSchema);
+
+module.exports = Course;

@@ -1,0 +1,147 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import RequireAuth from "@/components/RequireAuth";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import ErrorMessage from "@/components/ErrorMessage";
+import api from "@/lib/axios";
+import { LEVELS } from "@/lib/constants";
+import { useCategories } from "@/lib/useCategories";
+import ImageUpload from "@/components/ImageUpload";
+
+function NewCourseForm() {
+  const router = useRouter();
+  const { user } = useAuth();
+  const { categories } = useCategories();
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    category: "",
+    level: LEVELS[0],
+    thumbnail: "",
+    isFeatured: false,
+  });
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  // Categories load asynchronously - default to the first one as soon
+  // as they arrive, but don't stomp on a choice the instructor already made.
+  useEffect(() => {
+    if (!form.category && categories.length > 0) {
+      setForm((f) => (f.category ? f : { ...f, category: categories[0].name }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categories]);
+
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSubmitting(true);
+    try {
+      const res = await api.post("/courses", form);
+      router.push(`/instructor/courses/${res.data.course._id}`);
+    } catch (err) {
+      setError(err.response?.data?.message || "Unable to create course.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const breadcrumbItems =
+    user?.role === "admin"
+      ? [{ label: "Admin", href: "/admin" }, { label: "Instructor", href: "/instructor" }, { label: "New course" }]
+      : [{ label: "Instructor", href: "/instructor" }, { label: "New course" }];
+
+  return (
+    <div className="max-w-2xl mx-auto px-6 py-12">
+      <Breadcrumbs items={breadcrumbItems} />
+
+      <h1 className="text-3xl mb-1">Create a new course</h1>
+      <p className="text-text-muted mb-8">
+        Start with the basics — you can add lessons and publish it once it's ready.
+      </p>
+
+      <form onSubmit={handleSubmit} className="card p-6 flex flex-col gap-5">
+        <ErrorMessage message={error} />
+
+        <div>
+          <label className="block text-sm font-medium text-text mb-1.5">Course title</label>
+          <input
+            type="text"
+            name="title"
+            required
+            className="input-field"
+            value={form.title}
+            onChange={handleChange}
+            placeholder="e.g. Complete Web Development Bootcamp"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-text mb-1.5">Description</label>
+          <textarea
+            name="description"
+            required
+            rows={4}
+            className="input-field resize-none"
+            value={form.description}
+            onChange={handleChange}
+            placeholder="What will students learn in this course?"
+          />
+        </div>
+
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-text mb-1.5">Category</label>
+            <select name="category" required className="input-field" value={form.category} onChange={handleChange}>
+              {categories.length === 0 && <option value="">Loading categories...</option>}
+              {categories.map((c) => (
+                <option key={c._id} value={c.name}>{c.name}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-text mb-1.5">Level</label>
+            <select name="level" className="input-field capitalize" value={form.level} onChange={handleChange}>
+              {LEVELS.map((l) => (
+                <option key={l} value={l} className="capitalize">{l}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <ImageUpload
+          label="Course thumbnail (optional)"
+          value={form.thumbnail}
+          onUploaded={(url) => setForm({ ...form, thumbnail: url })}
+        />
+
+        <label className="flex items-center gap-2 text-sm text-text">
+          <input
+            type="checkbox"
+            checked={form.isFeatured}
+            onChange={(e) => setForm({ ...form, isFeatured: e.target.checked })}
+            className="h-4 w-4 accent-purple"
+          />
+          Show in "Popular courses" on the homepage
+        </label>
+
+        <button type="submit" disabled={submitting} className="btn-primary mt-2">
+          {submitting ? "Creating..." : "Create course & add lessons"}
+        </button>
+      </form>
+    </div>
+  );
+}
+
+export default function NewCoursePage() {
+  return (
+    <RequireAuth roles={["instructor", "admin"]}>
+      <NewCourseForm />
+    </RequireAuth>
+  );
+}
